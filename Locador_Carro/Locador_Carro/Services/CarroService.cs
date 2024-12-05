@@ -1,50 +1,38 @@
-﻿using System;
+﻿using Locador_Carro.Database;
+using Locador_Carro.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using LocadoraDeCarros.Models;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace LocadoraDeCarros.Services
+namespace Locador_Carro.Services
 {
     public class CarroService
     {
-        private readonly List<Carro> _carros = new();
+        private readonly CarroRepository _carroRepository = new CarroRepository();
 
-        public void Adicionar(Carro carro)
+        public void RegistrarCarro(Carro carro)
         {
-            carro.Id = _carros.Count > 0 ? _carros.Max(c => c.Id) + 1 : 1;
-            _carros.Add(carro);
+            _carroRepository.AdicionarCarro(carro);
+        }
+        public Carro ObterPorId(int id)
+        {
+            return _carroRepository.BuscarCarroPorId(id); // Chame o método existente em CarroRepository
         }
 
-        public List<Carro> ObterTodos() => _carros;
-
-        public Carro ObterPorId(int id) => _carros.FirstOrDefault(c => c.Id == id);
-
-        public void Atualizar(int id, Carro carroAtualizado)
+        public List<Carro> ObterCarrosDisponiveis()
         {
-            var carro = ObterPorId(id);
-            if (carro != null)
-            {
-                carro.Marca = carroAtualizado.Marca;
-                carro.Modelo = carroAtualizado.Modelo;
-                carro.Ano = carroAtualizado.Ano;
-                carro.Placa = carroAtualizado.Placa;
-                carro.Disponivel = carroAtualizado.Disponivel;
-            }
+            var carros = _carroRepository.ListarCarros();
+            return carros.FindAll(c => c.Disponivel);
         }
 
-        public void Remover(int id)
+        public void AlterarDisponibilidade(int id, bool disponivel)
         {
-            var carro = ObterPorId(id);
+            var carro = _carroRepository.BuscarCarroPorId(id);
             if (carro != null)
             {
-                _carros.Remove(carro);
+                carro.Disponivel = disponivel;
+                _carroRepository.AtualizarCarro(carro);
             }
         }
     }
 }
+ 
 

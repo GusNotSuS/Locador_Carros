@@ -1,2 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Locador_Carro.UI;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var carroUI = new CarroUI();
+        carroUI.MenuCarros();
+    }
+}

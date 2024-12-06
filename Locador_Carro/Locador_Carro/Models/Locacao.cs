@@ -10,7 +10,7 @@ namespace LocadoraDeCarros.Models
     {
         public int Id { get; set; }
         public int CarroId { get; set; }
-        public int ClienteId { get; set; }
+        public Cliente Cliente { get; set; }
         public DateTime DataInicio { get; set; }
         public DateTime? DataFim { get; set; } // Nullable para indicar locações ainda em andamento
         public decimal ValorTotal { get; set; }
@@ -20,7 +20,6 @@ namespace LocadoraDeCarros.Models
         public Locacao(int carroId, int clienteId, DateTime dataInicio, decimal valorTotal)
         {
             CarroId = carroId;
-            ClienteId = clienteId;
             DataInicio = dataInicio;
             ValorTotal = valorTotal;
         }

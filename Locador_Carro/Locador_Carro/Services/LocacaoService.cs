@@ -1,4 +1,5 @@
-﻿using Locador_Carro.Services;
+﻿using Locador_Carro.Models;
+using Locador_Carro.Services;
 using LocadoraDeCarros.Models;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,16 @@ namespace LocadoraDeCarros.Services
     {
         private readonly List<Locacao> _locacoes = new();
         private readonly CarroService _carroService;
+        private CrudService<Carro> carroService;
 
         public LocacaoService(CarroService carroService)
         {
             _carroService = carroService;
+        }
+
+        public LocacaoService(CrudService<Carro> carroService)
+        {
+            this.carroService = carroService;
         }
 
         public void RegistrarLocacao(int carroId, int clienteId, DateTime dataInicio, decimal valorTotal)
@@ -28,7 +35,6 @@ namespace LocadoraDeCarros.Services
             {
                 Id = _locacoes.Count > 0 ? _locacoes.Max(l => l.Id) + 1 : 1,
                 CarroId = carroId,
-                ClienteId = clienteId,
                 DataInicio = dataInicio,
                 ValorTotal = valorTotal
             };

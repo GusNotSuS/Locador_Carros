@@ -14,10 +14,10 @@ namespace Locador_Carro.Models
         public int Ano { get; set; }
         public string Placa { get; set; }
         public bool Disponivel { get; set; } // Indica se o carro está disponível para locação
-
+        public float Valor_Diario { get; set; }
         public override string ToString()
         {
-            return $"ID: {Id}, Modelo: {Modelo}, Marca: {Marca}, Ano: {Ano}, Placa: {Placa}, Disponível: {Disponivel}";
+            return $"ID: {Id}, Modelo: {Modelo}, Marca: {Marca}, Ano: {Ano}, Placa: {Placa}, Disponível: {Disponivel}, Valor de diária: {Valor_Diario}";
         }
     }
 }

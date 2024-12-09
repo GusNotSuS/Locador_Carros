@@ -1,63 +1,61 @@
-﻿using Locador_Carro.Models;
-using Locador_Carro.Services;
-using LocadoraDeCarros.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Locador_Carro.Database;
+using Locador_Carro.Models;
 
-namespace LocadoraDeCarros.Services
+namespace Locador_Carro.Services
 {
     public class LocacaoService
     {
-        private readonly List<Locacao> _locacoes = new();
-        private readonly CarroService _carroService;
-        private CrudService<Carro> carroService;
+        private int _proximoId = 1;
 
-        public LocacaoService(CarroService carroService)
+        // Registrar uma nova locação
+        public void RegistrarLocacao(string clienteNome, Carro carro, DateTime dataInicio, DateTime dataFim, decimal valorDiario)
         {
-            _carroService = carroService;
-        }
+            if (!carro.Disponivel)
+            {
+                Console.WriteLine("O carro não está disponível para locação.");
+                return;
+            }
 
-        public LocacaoService(CrudService<Carro> carroService)
-        {
-            this.carroService = carroService;
-        }
+            // Calcula os dias da locação
+            int diasDeLocacao = (dataFim - dataInicio).Days;
+            if (diasDeLocacao <= 0)
+            {
+                Console.WriteLine("As datas fornecidas são inválidas.");
+                return;
+            }
 
-        public void RegistrarLocacao(int carroId, int clienteId, DateTime dataInicio, decimal valorTotal)
-        {
-            var carro = _carroService.ObterPorId(carroId);
-            if (carro == null || !carro.Disponivel)
-                throw new InvalidOperationException("Carro não disponível para locação.");
+            // Calcula o valor total da locação
+            decimal valorTotal = diasDeLocacao * valorDiario;
 
-            carro.Disponivel = false;
-
+            // Cria a locação
             var locacao = new Locacao
             {
-                Id = _locacoes.Count > 0 ? _locacoes.Max(l => l.Id) + 1 : 1,
-                CarroId = carroId,
-                DataInicio = dataInicio,
+                Id = _proximoId++,
+                ClienteNome = clienteNome,
+                CarroModelo = carro.Modelo,
+                CarroPlaca = carro.Placa,
+                DataLocacao = dataInicio,
+                DataDevolucao = dataFim,
+                ValorDiario = valorDiario,
                 ValorTotal = valorTotal
             };
 
-            _locacoes.Add(locacao);
+            // Adiciona ao "banco de dados"
+            LocacaoDatabase.AdicionarLocacao(locacao);
+
+            // Atualiza a disponibilidade do carro
+            carro.Disponivel = false;
+
+            Console.WriteLine($"Locação registrada com sucesso! Valor total: R${valorTotal}");
         }
 
-        public void FinalizarLocacao(int locacaoId, DateTime dataFim)
+        // Obter histórico de locações
+        public List<Locacao> ObterHistorico()
         {
-            var locacao = _locacoes.FirstOrDefault(l => l.Id == locacaoId);
-            if (locacao == null)
-                throw new InvalidOperationException("Locação não encontrada.");
-
-            var carro = _carroService.ObterPorId(locacao.CarroId);
-            if (carro != null)
-                carro.Disponivel = true;
-
-            locacao.DataFim = dataFim;
+            return LocacaoDatabase.ObterHistorico();
         }
-
-        public List<Locacao> ObterHistorico() => _locacoes;
-
-        public Locacao ObterPorId(int id) => _locacoes.FirstOrDefault(l => l.Id == id);
     }
 }
+
+
 

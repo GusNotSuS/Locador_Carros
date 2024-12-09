@@ -2,6 +2,7 @@
 using LocadoraDeCarros.Services;
 using Locador_Carro.UI;
 using Locador_Carro.Services;
+using Locador_Carro.Database;
 
 class Program
 {

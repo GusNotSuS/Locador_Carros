@@ -1,27 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LocadoraDeCarros.Models
+namespace Locador_Carro.Models
 {
     public class Locacao
     {
         public int Id { get; set; }
+        public string ClienteNome { get; set; }
+        public string ClienteCPF { get; set; }
         public int CarroId { get; set; }
-        public Cliente Cliente { get; set; }
-        public DateTime DataInicio { get; set; }
-        public DateTime? DataFim { get; set; } // Nullable para indicar locações ainda em andamento
-        public decimal ValorTotal { get; set; }
-
-        public Locacao() { }
-
-        public Locacao(int carroId, int clienteId, DateTime dataInicio, decimal valorTotal)
+        public DateTime DataLocacao { get; set; }
+        public DateTime DataDevolucao { get; set; } // Pode ser null se ainda não devolvido
+        public float valor_locacao { get; set; }
+        public override string ToString()
         {
-            CarroId = carroId;
-            DataInicio = dataInicio;
-            ValorTotal = valorTotal;
+            return $"Id: {Id}, Cliente: {ClienteNome}, Id do Carro: {CarroId}" +
+                   $"Data Locação: {DataLocacao}, Data Devolução: {(DataDevolucao)}";
         }
     }
 }
+

@@ -16,7 +16,8 @@ namespace Locador_Carro.UI
                 Console.WriteLine("\n=== Menu Carros ===");
                 Console.WriteLine("1. Registrar Carro");
                 Console.WriteLine("2. Listar Carros Disponíveis");
-                Console.WriteLine("3. Alterar Disponibilidade");
+                Console.WriteLine("3. Listar todos os carros");
+                Console.WriteLine("4. Alterar Disponibilidade");
                 Console.WriteLine("0. Voltar ao Menu Principal");
                 Console.Write("Escolha uma opção: ");
                 opcao = int.Parse(Console.ReadLine());
@@ -30,6 +31,9 @@ namespace Locador_Carro.UI
                         ListarCarrosDisponiveis();
                         break;
                     case 3:
+                        ListarCarros();
+                        break;
+                    case 4:
                         AlterarDisponibilidade();
                         break;
                 }
@@ -62,6 +66,16 @@ namespace Locador_Carro.UI
         }
 
         private void ListarCarrosDisponiveis()
+        {
+            var carros = _carroService.ObterCarrosDisponiveis();
+            Console.WriteLine("\nCarros Disponíveis:");
+            foreach (var carro in carros)
+            {
+                Console.WriteLine(carro);
+            }
+        }
+
+        private void ListarCarros()
         {
             var carros = _carroService.ObterCarrosDisponiveis();
             Console.WriteLine("\nCarros Disponíveis:");

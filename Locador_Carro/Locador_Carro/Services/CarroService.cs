@@ -22,6 +22,11 @@ namespace Locador_Carro.Services
             var carros = _carroRepository.ListarCarros();
             return carros.FindAll(c => c.Disponivel);
         }
+        public List<Carro> ObterCarros()
+        {
+            var carros = _carroRepository.ListarCarros();
+            return carros;
+        }
 
         public void AlterarDisponibilidade(int id, bool disponivel)
         {

@@ -1,99 +1,70 @@
-﻿using Locador_Carro.Models;
-using Locador_Carro.Services;
-using System;
+﻿using LocadoraDeCarros.Models;
 
-namespace Locador_Carro.UI
+public class CarroUI
 {
-    public class CarroUI
+    private readonly CarroService _carroService = new();
+
+    public void MenuCarros()
     {
-        private readonly CarroService _carroService = new CarroService();
-
-        public void MenuCarros()
+        int opcao;
+        do
         {
-            int opcao;
-            do
+            Console.WriteLine("\n=== Menu Gerenciamento de Carros ===");
+            Console.WriteLine("1. Adicionar Carro");
+            Console.WriteLine("2. Listar Carros");
+            Console.WriteLine("3. Alterar Disponibilidade");
+            Console.WriteLine("0. Voltar");
+            Console.Write("Escolha uma opção: ");
+            opcao = int.Parse(Console.ReadLine() ?? "0");
+
+            switch (opcao)
             {
-                Console.WriteLine("\n=== Menu Carros ===");
-                Console.WriteLine("1. Registrar Carro");
-                Console.WriteLine("2. Listar Carros Disponíveis");
-                Console.WriteLine("3. Listar todos os carros");
-                Console.WriteLine("4. Alterar Disponibilidade");
-                Console.WriteLine("0. Voltar ao Menu Principal");
-                Console.Write("Escolha uma opção: ");
-                opcao = int.Parse(Console.ReadLine());
-
-                switch (opcao)
-                {
-                    case 1:
-                        RegistrarCarro();
-                        break;
-                    case 2:
-                        ListarCarrosDisponiveis();
-                        break;
-                    case 3:
-                        ListarCarros();
-                        break;
-                    case 4:
-                        AlterarDisponibilidade();
-                        break;
-                }
-            } while (opcao != 0);
-        }
-
-        private void RegistrarCarro()
-        {
-            Console.Write("Digite o modelo do carro: ");
-            string modelo = Console.ReadLine();
-            Console.Write("Digite a marca do carro: ");
-            string marca = Console.ReadLine();
-            Console.Write("Digite o ano do carro: ");
-            int ano = int.Parse(Console.ReadLine());
-            Console.Write("Digite a placa do carro: ");
-            string placa = Console.ReadLine();
-
-            var carro = new Carro
-            {
-                Id = new Random().Next(1, 1000), // Apenas para simulação
-                Modelo = modelo,
-                Marca = marca,
-                Ano = ano,
-                Placa = placa,
-                Disponivel = true
-            };
-
-            _carroService.RegistrarCarro(carro);
-            Console.WriteLine("Carro registrado com sucesso!");
-        }
-
-        private void ListarCarrosDisponiveis()
-        {
-            var carros = _carroService.ObterCarrosDisponiveis();
-            Console.WriteLine("\nCarros Disponíveis:");
-            foreach (var carro in carros)
-            {
-                Console.WriteLine(carro);
+                case 1:
+                    AdicionarCarro();
+                    break;
+                case 2:
+                    ListarCarros();
+                    break;
+                case 3:
+                    AlterarDisponibilidade();
+                    break;
             }
-        }
+        } while (opcao != 0);
+    }
 
-        private void ListarCarros()
+    private void AdicionarCarro()
+    {
+        Console.Write("Modelo: ");
+        var modelo = Console.ReadLine();
+        Console.Write("Placa: ");
+        var placa = Console.ReadLine();
+        Console.Write("Marca: ");
+        var marca = Console.ReadLine();
+        Console.Write("Ano: ");
+        var ano = int.Parse(Console.ReadLine() ?? "0");
+        Console.Write("Valor Diário: ");
+        var valor = float.Parse(Console.ReadLine() ?? "0");
+
+        _carroService.AdicionarCarro(new Carro { Modelo = modelo, Placa = placa, Marca = marca, Ano = ano, ValorDiario = valor });
+        Console.WriteLine("Carro adicionado com sucesso!");
+    }
+
+    private void ListarCarros()
+    {
+        foreach (var carro in _carroService.ListarCarros())
         {
-            var carros = _carroService.ObterCarrosDisponiveis();
-            Console.WriteLine("\nCarros Disponíveis:");
-            foreach (var carro in carros)
-            {
-                Console.WriteLine(carro);
-            }
+            Console.WriteLine($"ID: {carro.Id}, Modelo: {carro.Modelo}, Disponível: {carro.Disponivel}");
         }
+    }
 
-        private void AlterarDisponibilidade()
-        {
-            Console.Write("Digite o ID do carro: ");
-            int id = int.Parse(Console.ReadLine());
-            Console.Write("O carro está disponível? (true/false): ");
-            bool disponivel = bool.Parse(Console.ReadLine());
+    private void AlterarDisponibilidade()
+    {
+        Console.Write("ID do Carro: ");
+        var id = int.Parse(Console.ReadLine() ?? "0");
+        Console.Write("Disponível (true/false): ");
+        var disponivel = bool.Parse(Console.ReadLine() ?? "false");
 
-            _carroService.AlterarDisponibilidade(id, disponivel);
-            Console.WriteLine("Disponibilidade atualizada com sucesso!");
-        }
+        _carroService.AlterarDisponibilidade(id, disponivel);
+        Console.WriteLine("Disponibilidade alterada com sucesso!");
     }
 }

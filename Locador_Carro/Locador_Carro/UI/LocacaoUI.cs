@@ -1,102 +1,78 @@
-﻿using Locador_Carro.Models;
-using Locador_Carro.Services;
-using System;
-using System.Linq;
+﻿using LocadoraDeCarros;
 
-namespace Locador_Carro.UI
+public class LocacaoUI
 {
-    public class LocacaoUI
+    private readonly LocacaoService _locacaoService = new();
+
+    public void MenuLocacoes()
     {
-        private readonly LocacaoService _locacaoService;
-        private readonly CarroService _carroService;
-
-        public LocacaoUI(LocacaoService locacaoService, CarroService carroService)
+        int opcao;
+        do
         {
-            _locacaoService = locacaoService;
-            _carroService = carroService;
+            Console.WriteLine("\n=== Menu Locação de Carros ===");
+            Console.WriteLine("1. Realizar Locação");
+            Console.WriteLine("2. Ver Histórico de Locações");
+            Console.WriteLine("0. Voltar");
+            Console.Write("Escolha uma opção: ");
+            opcao = int.Parse(Console.ReadLine() ?? "0");
+
+            switch (opcao)
+            {
+                case 1:
+                    RealizarLocacao();
+                    break;
+                case 2:
+                    VerHistorico();
+                    break;
+            }
+        } while (opcao != 0);
+    }
+
+    private void RealizarLocacao()
+    {
+        Console.Write("Nome do Cliente: ");
+        var nomeCliente = Console.ReadLine();
+        Console.Write("CPF do Cliente: ");
+        var cpfCliente = Console.ReadLine();
+        Console.Write("ID do Carro: ");
+        var carroId = int.Parse(Console.ReadLine() ?? "0");
+        Console.Write("Data de Locação (yyyy-MM-dd): ");
+        var dataInicio = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString());
+        Console.Write("Data de Devolução (yyyy-MM-dd): ");
+        var dataFim = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString());
+
+        if (_locacaoService.VerificarDisponibilidade(carroId, dataInicio, dataFim))
+        {
+            var carro = Database.Carros.First(c => c.Id == carroId);
+            var valorTotal = (float)(dataFim - dataInicio).TotalDays * carro.ValorDiario;
+
+            _locacaoService.RegistrarLocacao(new Locacao
+            {
+                NomeCliente = nomeCliente,
+                CpfCliente = cpfCliente,
+                CarroId = carroId,
+                DataLocacao = dataInicio,
+                DataDevolucao = dataFim,
+                ValorTotal = valorTotal
+            });
+
+            Console.WriteLine("Locação realizada com sucesso!");
         }
-
-        public void MenuLocacao()
+        else
         {
-            int opcao;
-            do
-            {
-                Console.WriteLine("\n=== Menu Locação ===");
-                Console.WriteLine("1. Realizar Locação");
-                Console.WriteLine("2. Visualizar Histórico de Locações");
-                Console.WriteLine("0. Voltar ao Menu Principal");
-                Console.Write("Escolha uma opção: ");
-                opcao = int.Parse(Console.ReadLine());
-
-                switch (opcao)
-                {
-                    case 1:
-                        RealizarLocacao();
-                        break;
-                    case 2:
-                        VisualizarHistorico();
-                        break;
-                }
-            } while (opcao != 0);
+            Console.WriteLine("Carro não está disponível para o período selecionado.");
         }
+    }
 
-        private void RealizarLocacao()
+    private void VerHistorico()
+    {
+        foreach (var locacao in _locacaoService.ObterHistorico())
         {
-            Console.Write("Digite o nome do cliente: ");
-            string clienteNome = Console.ReadLine();
-
-            var carrosDisponiveis = _carroService.ObterCarrosDisponiveis();
-            if (!carrosDisponiveis.Any())
-            {
-                Console.WriteLine("Nenhum carro disponível para locação.");
-                return;
-            }
-
-            Console.WriteLine("\nCarros Disponíveis:");
-            foreach (var carro in carrosDisponiveis)
-            {
-                Console.WriteLine(carro);
-            }
-
-            Console.Write("Digite o ID do carro que deseja locar: ");
-            int carroId = int.Parse(Console.ReadLine());
-            var carroSelecionado = carrosDisponiveis.FirstOrDefault(c => c.Id == carroId);
-
-            if (carroSelecionado == null)
-            {
-                Console.WriteLine("Carro não encontrado.");
-                return;
-            }
-
-            Console.Write("Digite a data de início da locação (formato: yyyy-MM-dd): ");
-            DateTime dataInicio = DateTime.Parse(Console.ReadLine());
-
-            Console.Write("Digite a data de fim da locação (formato: yyyy-MM-dd): ");
-            DateTime dataFim = DateTime.Parse(Console.ReadLine());
-
-            Console.Write("Digite o valor diário da locação: R$");
-            decimal valorDiario = decimal.Parse(Console.ReadLine());
-
-            _locacaoService.RegistrarLocacao(clienteNome, carroSelecionado, dataInicio, dataFim, valorDiario);
-        }
-
-        private void VisualizarHistorico()
-        {
-            var historico = _locacaoService.ObterHistorico();
-
-            if (!historico.Any())
-            {
-                Console.WriteLine("Nenhuma locação registrada.");
-                return;
-            }
-
-            Console.WriteLine("\nHistórico de Locações:");
-            foreach (var locacao in historico)
-            {
-                Console.WriteLine(locacao);
-            }
+            Console.WriteLine($"ID: {locacao.Id}, Cliente: {locacao.NomeCliente}, Carro ID: {locacao.CarroId}, Locação: {locacao.DataLocacao}, Devolução: {locacao.DataDevolucao}, Valor: {locacao.ValorTotal}");
         }
     }
 }
+
+
 
 

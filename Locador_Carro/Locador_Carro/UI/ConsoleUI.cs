@@ -1,7 +1,4 @@
-﻿using Locador_Carro.UI;
-using LocadoraDeCarros.Services;
-
-namespace LocadoraDeCarros.UI
+﻿namespace LocadoraDeCarros.UI
 {
     public class ConsoleUI
     {
@@ -34,7 +31,7 @@ namespace LocadoraDeCarros.UI
                         _carroUI.MenuCarros(); // Chama o menu de gerenciamento de carros
                         break;
                     case "2":
-                        _locacaoUI.RealizarLocacao(); // Chama o método para locar carro
+                        _locacaoUI.MenuLocacoes(); // Chama o método para locar carro
                         break;
                     case "3":
                         VerHistorico(); // Histórico pode ser implementado aqui

@@ -1,61 +1,26 @@
-﻿using Locador_Carro.Database;
-using Locador_Carro.Models;
+﻿using LocadoraDeCarros;
+using LocadoraDeCarros.Models;
 
-namespace Locador_Carro.Services
+public class LocacaoService
 {
-    public class LocacaoService
+    public void RegistrarLocacao(Locacao locacao)
     {
-        private int _proximoId = 1;
+        Database.Locacoes.Add(locacao);
 
-        // Registrar uma nova locação
-        public void RegistrarLocacao(string clienteNome, Carro carro, DateTime dataInicio, DateTime dataFim, decimal valorDiario)
-        {
-            if (!carro.Disponivel)
-            {
-                Console.WriteLine("O carro não está disponível para locação.");
-                return;
-            }
+        var carro = Database.Carros.FirstOrDefault(c => c.Id == locacao.CarroId);
+        if (carro != null) carro.Disponivel = false;
+    }
 
-            // Calcula os dias da locação
-            int diasDeLocacao = (dataFim - dataInicio).Days;
-            if (diasDeLocacao <= 0)
-            {
-                Console.WriteLine("As datas fornecidas são inválidas.");
-                return;
-            }
+    public List<Locacao> ObterHistorico() => Database.Locacoes;
 
-            // Calcula o valor total da locação
-            decimal valorTotal = diasDeLocacao * valorDiario;
-
-            // Cria a locação
-            var locacao = new Locacao
-            {
-                Id = _proximoId++,
-                ClienteNome = clienteNome,
-                CarroModelo = carro.Modelo,
-                CarroPlaca = carro.Placa,
-                DataLocacao = dataInicio,
-                DataDevolucao = dataFim,
-                ValorDiario = valorDiario,
-                ValorTotal = valorTotal
-            };
-
-            // Adiciona ao "banco de dados"
-            LocacaoDatabase.AdicionarLocacao(locacao);
-
-            // Atualiza a disponibilidade do carro
-            carro.Disponivel = false;
-
-            Console.WriteLine($"Locação registrada com sucesso! Valor total: R${valorTotal}");
-        }
-
-        // Obter histórico de locações
-        public List<Locacao> ObterHistorico()
-        {
-            return LocacaoDatabase.ObterHistorico();
-        }
+    public bool VerificarDisponibilidade(int carroId, DateTime dataInicio, DateTime dataFim)
+    {
+        return !Database.Locacoes.Any(l => l.CarroId == carroId &&
+                                           l.DataLocacao < dataFim &&
+                                           l.DataDevolucao > dataInicio);
     }
 }
+
 
 
 
